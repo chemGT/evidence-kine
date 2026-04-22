@@ -1,0 +1,63 @@
+/* eslint-env node */
+module.exports = {
+  root: true,
+  env: { browser: true, es2022: true, node: true },
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "prettier",
+  ],
+  ignorePatterns: [
+    "dist",
+    "node_modules",
+    ".eslintrc.cjs",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "tailwind.config.ts",
+    "postcss.config.js",
+  ],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: "module",
+    ecmaFeatures: { jsx: true },
+  },
+  plugins: [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "react-refresh",
+    "prettier",
+  ],
+  settings: {
+    react: { version: "detect" },
+  },
+  rules: {
+    "react-refresh/only-export-components": [
+      "warn",
+      { allowConstantExport: true },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+    ],
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      { prefer: "type-imports" },
+    ],
+    "prettier/prettier": "warn",
+  },
+  overrides: [
+    {
+      // shadcn/ui components co-export variants helpers (cva) avec le composant :
+      // pattern standard, incompatible avec react-refresh strict.
+      files: ["src/components/ui/*.tsx"],
+      rules: {
+        "react-refresh/only-export-components": "off",
+      },
+    },
+  ],
+};

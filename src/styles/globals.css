@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap");
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+   * Les valeurs clinimetriques (Se, Sp, LR) utilisent IBM Plex Sans
+   * avec chiffres tabulaires pour faciliter la lecture comparative.
+   */
+  .font-technical,
+  [data-technical] {
+    font-family:
+      "IBM Plex Sans",
+      ui-sans-serif,
+      system-ui,
+      sans-serif;
+    font-feature-settings: "tnum", "cv08";
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Cibles tactiles minimum : usage une main au cabinet (STYLE.md). */
+  button,
+  [role="button"],
+  input,
+  select {
+    @apply min-h-touch;
+  }
+}

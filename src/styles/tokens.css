@@ -1,0 +1,39 @@
+/**
+ * Design tokens — Medical Excellence
+ * Reference : STYLE.md
+ *
+ *   Fond            : #FFFFFF
+ *   Action (bleu)   : #007AFF
+ *   Red Flag        : #FF3B30   (exclusivement reservee aux red flags cliniques)
+ *   Bordure neutre  : #E9ECEC
+ *
+ * Typographie :
+ *   Inter (sans)            -> interface
+ *   IBM Plex Sans (technical) -> valeurs clinimetriques (Se / Sp / LR)
+ */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 222 15% 15%; /* #1F2328 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 15% 15%;
+
+    --muted: 210 11% 96%; /* #F4F5F7 */
+    --muted-foreground: 220 9% 46%; /* #6B7280 */
+
+    --border: 200 6% 92%; /* #E9ECEC */
+    --input: 200 6% 92%;
+
+    --ring: 211 100% 50%;
+
+    --action: 211 100% 50%; /* #007AFF  Bleu Chirurgical */
+    --action-foreground: 0 0% 100%;
+
+    --redflag: 4 100% 60%; /* #FF3B30  Rouge Triage */
+    --redflag-foreground: 0 0% 100%;
+
+    --radius: 0.5rem;
+  }
+}
