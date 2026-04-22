@@ -151,6 +151,25 @@ Agents : `@architect`, `@qa`, `@critic`
 
 **Risque résiduel (à traiter Sprint 5)** : hypothèse d'indépendance conditionnelle surestime la probabilité finale quand deux tests explorent la même fonction (ex. Jobe + Full Can) → afficher note pédagogique dans l'UI.
 
+### Sprint 1 bis — Migration tooling + durcissement règle QA — statut : **clos** (2026-04-22)
+
+Agents : `@architect`, `@qa`, `@critic`
+
+Contexte : lors du Sprint 1, `npm install -D @vitest/coverage-v8` a entraîné un upgrade **non audité** de `vitest` (v2→v4) et `vite` (v5→v8), cassant implicitement le peer-dep `@vitejs/plugin-react@4.3.2`. Ce sprint corrige la dérive et durcit la règle `@qa`.
+
+- [x] **M.1** [`@vitejs/plugin-react`](package.json) : `^4.3.2 → ^6.0.1` (version officielle Vite 8, peer `vite: ^8.0.0`)
+- [x] **M.2** [`.ai/rules/qa-agent.md`](.ai/rules/qa-agent.md) durci : périmètre élargi (tout `src/logic/**`, `src/data/**`, stores), seuils quantifiés (≥ 95 % par fichier `src/logic/**`, 100 % `src/logic/bayesian/**`), cas limites exhaustifs, exigence d'intégrité cliniques (DOI/plages), test d'invariance pour moteur ≥ 3 paramètres
+- [x] **M.3** [`.ai/agents/qa-agent.md`](.ai/agents/qa-agent.md) aligné (renvoi vers la règle, seuils explicites)
+- [x] **M.4** [`vitest.config.ts`](vitest.config.ts) : seuils par glob — global 80 %, `src/logic/**` 95 %, `src/logic/bayesian/**` 100 %
+- [x] **M.5** [`package.json`](package.json) : script `test:coverage`
+- [x] **M.6** Audit `@critic` : **AUDIT : [OK]** (zéro impact clinique, warnings Vite 8 éliminés, gouvernance corrigée)
+
+**Vérification CI** : `npm run build` 540 ms · **zéro warning** · bundle 142.73 KB JS + 13.84 KB CSS · `npm test` 132/132 · couverture globale 100 % · `npm run typecheck` / `npm run lint` clean.
+
+**Breaking changes absorbés** : Vitest v2→v4 (API tests inchangée, thresholds per-glob OK), Vite v5→v8 (Rolldown/OXC transparents). Node min 22.12 (actuel : 22.22).
+
+**Point de vigilance** : reporter coverage `text` v4 ne ventile plus par fichier dans la sortie console (summary OK, per-glob thresholds OK). À surveiller, non bloquant.
+
 ---
 
 ## Roadmap globale (rappel `EVOLUTION.md`)
@@ -162,4 +181,4 @@ Agents : `@architect`, `@qa`, `@critic`
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 1 Moteur bayésien clos (2026-04-22), Sprint 2 Data access + Store prêt à démarrer.*
+*Dernière mise à jour : @orchestrator — Sprint 1 Moteur bayésien + Sprint 1 bis Migration tooling clos (2026-04-22), Sprint 2 Data access + Store prêt à démarrer.*
