@@ -27,22 +27,11 @@ Supabase Seed ──► Zustand Store ──► Moteur Bayésien (pur TS) ──
 
 ## Sprint en cours
 
-*Aucun sprint actif — prêt à lancer Sprint 2 (Data access + Store).*
+*Aucun sprint actif — prêt à lancer Sprint 3 (Vignette clinique pilote).*
 
 ---
 
 ## Feuille de route Phase 1 Alpha
-
-### Sprint 2 — Data access + Store — statut : à faire
-
-Agent : `@architect`
-Objectif : state management découplé de l'UI (`CONVENTIONS.md`).
-
-- [ ] **S2.1** `src/data/repositories/clinicalTestsRepo.ts` — fetch tests/pathologies via client Supabase
-- [ ] **S2.2** `src/store/clinicalTestsStore.ts` (Zustand) — cache tests par pathologie
-- [ ] **S2.3** `src/store/simulationStore.ts` — état vignette : `{ preTestProb, testsPerformed[], currentProb }`
-- [ ] **S2.4** `src/hooks/useBayesianReasoning.ts` — sélecteur combinant store + `cascade.ts`
-- [ ] **S2.5** Tests store avec mock Supabase
 
 ### Sprint 3 — Vignette clinique pilote — statut : à faire
 
@@ -170,6 +159,24 @@ Contexte : lors du Sprint 1, `npm install -D @vitest/coverage-v8` a entraîné u
 
 **Point de vigilance** : reporter coverage `text` v4 ne ventile plus par fichier dans la sortie console (summary OK, per-glob thresholds OK). À surveiller, non bloquant.
 
+### Sprint 2 — Data access + Store — statut : **clos** (2026-04-22)
+
+Agents : `@architect`, `@qa`, `@critic`
+
+Objectif : state management découplé de l'UI (`CONVENTIONS.md`), repository + stores Zustand + hook de raisonnement bayésien, 100 % testés avec mock Supabase.
+
+- [x] **S2.1** [`src/data/repositories/clinicalTestsRepo.ts`](src/data/repositories/clinicalTestsRepo.ts) — factory `createClinicalTestsRepository(client)` + `ClinicalTestsRepoError`. API : `fetchBodyRegion`, `fetchPathologiesByRegion`, `fetchClinicalTestsByPathology`. Lecture seule.
+- [x] **S2.2** [`src/store/clinicalTestsStore.ts`](src/store/clinicalTestsStore.ts) — factory Zustand `createClinicalTestsStore(repo)` avec cache par slug, idempotence, flag `reload`, tracking `loading/error` par clé.
+- [x] **S2.3** [`src/store/simulationStore.ts`](src/store/simulationStore.ts) — store pur (zéro dep Supabase) : `startSimulation`, `recordTestResult`, `undoLastTest`, `reset`. Rejette preTestProbability hors [0,1].
+- [x] **S2.4** [`src/hooks/useBayesianReasoning.ts`](src/hooks/useBayesianReasoning.ts) — hook React + fonction pure `deriveBayesianReasoning`. Priorise LR seed, fallback `computeLikelihoodRatios`. Gère tests non résolus (`unresolvedTestIds`).
+- [x] **S2.5** Tests Vitest avec [`supabaseMock.ts`](src/data/repositories/__tests__/supabaseMock.ts) chainable. 45 nouveaux tests (repo, 2 stores, hook pur) — couverture 100 %.
+- [x] **S2.6** [`src/store/defaults.ts`](src/store/defaults.ts) — wiring prod isolé (évite lecture VITE_SUPABASE_* en tests).
+- [x] Audit `@critic` : **AUDIT : [OK]** (DI respectée, LR prioritaires, Classe IIa OK, aucun write).
+
+**Vérification CI** : `npm run build` 771 ms zéro warning · bundle 142.73 KB JS + 14.04 KB CSS · `npm test` 177/177 · couverture **100 % partout** (stmts/branches/funcs/lines) · typecheck + lint clean.
+
+**Risque résiduel (Phase 2)** : in-flight dedup retourne `[]` pour les appels concurrents sur un même slug. Acceptable pour Serious Game (une vignette à la fois) ; à revoir pour dashboard multi-pathologies.
+
 ---
 
 ## Roadmap globale (rappel `EVOLUTION.md`)
@@ -181,4 +188,4 @@ Contexte : lors du Sprint 1, `npm install -D @vitest/coverage-v8` a entraîné u
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 1 Moteur bayésien + Sprint 1 bis Migration tooling clos (2026-04-22), Sprint 2 Data access + Store prêt à démarrer.*
+*Dernière mise à jour : @orchestrator — Sprint 2 Data access + Store clos (2026-04-22), Sprint 3 Vignette clinique pilote prêt à démarrer.*
