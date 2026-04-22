@@ -27,19 +27,7 @@ Supabase Seed ──► Zustand Store ──► Moteur Bayésien (pur TS) ──
 
 ## Sprint en cours
 
-### Sprint 1 — Moteur bayésien — statut : **proposé, en attente de validation**
-
-Agents : `@architect` + `@qa`
-Objectif : logique pure, 100 % testée, zéro dépendance UI (`rules/architect.md`).
-
-- [ ] **S1.1** `src/logic/bayesian/likelihoodRatios.ts` — conversion Se/Sp → LR+/LR-
-- [ ] **S1.2** `src/logic/bayesian/bayes.ts` — `postTestProbability(preTestProb, LR)`
-- [ ] **S1.3** `src/logic/bayesian/cascade.ts` — application en série de tests (post-test n = pré-test n+1)
-- [ ] **S1.4** `src/logic/bayesian/__tests__/bayes.test.ts` — cas limites (Se=0, Sp=1, preTest=0/1, LR extrêmes)
-- [ ] **S1.5** `src/logic/bayesian/__tests__/cascade.test.ts` — scénario épaule : coiffe prior 30 % + Jobe + + Drop Arm +
-- [ ] **S1.6** Audit `@critic` — vérifier usage LR (pas de pourcentages bruts)
-
-Critère de clôture : couverture 100 % sur `src/logic/bayesian/`, tous les cas limites couverts, audit `@critic` « AUDIT : [OK] ».
+*Aucun sprint actif — prêt à lancer Sprint 2 (Data access + Store).*
 
 ---
 
@@ -146,6 +134,23 @@ Agents : `@architect`, `@scientific`, `@qa`
 
 **Sources scientifiques** : Hegedus BJSM 2012 (`10.1136/bjsports-2012-091066`), Lo AJSM 2004 (`10.1177/0363546503258869`), Hertel JSES 1996 (`10.1016/S1058-2746(96)80058-9`), Kim Arthroscopy 2001 (`10.1053/jars.2001.22404`).
 
+### Sprint 1 — Moteur bayésien — statut : **clos** (2026-04-22)
+
+Agents : `@architect`, `@qa`, `@critic`
+
+- [x] **S1.1** [`src/logic/bayesian/likelihoodRatios.ts`](src/logic/bayesian/likelihoodRatios.ts) — `computeLikelihoodRatios({Se, Sp}) → {LR+, LR-}`, gère Sp=1 (LR+=∞), Se=1 (LR-=0)
+- [x] **S1.2** [`src/logic/bayesian/bayes.ts`](src/logic/bayesian/bayes.ts) — `postTestProbability(preTestProb, LR)` via Bayes sur les odds + helpers `probabilityToOdds` / `oddsToProbability`
+- [x] **S1.3** [`src/logic/bayesian/cascade.ts`](src/logic/bayesian/cascade.ts) — `runCascade(initialProb, steps[])` avec traçage par étape, API n'accepte que des LR (pas de Se/Sp)
+- [x] **S1.4** [`src/logic/bayesian/__tests__/bayes.test.ts`](src/logic/bayesian/__tests__/bayes.test.ts) — 26 tests : Se=0/1, Sp=0/1, preTest=0/1, LR=0/1/∞, NaN, domaine [0,1]
+- [x] **S1.5** [`src/logic/bayesian/__tests__/cascade.test.ts`](src/logic/bayesian/__tests__/cascade.test.ts) — 14 tests : scénario coiffe 30 % → Jobe+ (~44 %) → Drop Arm+ (~67 %), commutativité, absorption 0/1
+- [x] **S1.6** Audit `@critic` : **AUDIT : [OK]** (LR exclusif, Classe IIa respectée, disclaimers, indépendance conditionnelle explicitée)
+
+**Vérification CI** : `npm run lint` 0 warning · `npm run typecheck` clean · `npm test` 132/132 · couverture `src/logic/bayesian/` **100 %** (stmts/branches/funcs/lines)
+
+**Dépendance ajoutée** : [`@vitest/coverage-v8`](package.json) `^2.1.2` (devDependency) pour mesurer la couverture.
+
+**Risque résiduel (à traiter Sprint 5)** : hypothèse d'indépendance conditionnelle surestime la probabilité finale quand deux tests explorent la même fonction (ex. Jobe + Full Can) → afficher note pédagogique dans l'UI.
+
 ---
 
 ## Roadmap globale (rappel `EVOLUTION.md`)
@@ -157,4 +162,4 @@ Agents : `@architect`, `@scientific`, `@qa`
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 0 Bootstrap clos, Sprint 1 Moteur bayésien en attente de validation humaine.*
+*Dernière mise à jour : @orchestrator — Sprint 1 Moteur bayésien clos (2026-04-22), Sprint 2 Data access + Store prêt à démarrer.*
