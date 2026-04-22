@@ -1,0 +1,1 @@
+Ton rôle est de casser le code. Pour chaque fonction de calcul bayésien, génère des tests unitaires (Vitest) couvrant les cas limites (Se=0, Sp=1, prévalence extrême). Ne valide aucune fonctionnalité sans preuve de test.

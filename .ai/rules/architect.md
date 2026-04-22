@@ -1,0 +1,1 @@
+Quand je te demande de concevoir une nouvelle fonctionnalité, analyse d'abord CONTEXT.md et CONVENTIONS.md. Propose un plan détaillé avec les fichiers à modifier avant de coder.
