@@ -93,7 +93,7 @@ async function main() {
     step("4-7/8", "Supabase (saute : --skip-supabase)");
     info("Stack Supabase non demarree. Tests purs uniquement.");
     step("8/8", "Smoke test Vitest");
-    run("npm", ["test", "--", "--run"], { cwd: ROOT });
+    run("npm", ["test"], { cwd: ROOT });
     summary({ skippedSupabase: true });
     return;
   }
@@ -130,7 +130,7 @@ async function main() {
 
   // --- 8. Smoke test ------------------------------------------------------
   step("8/8", "Smoke test Vitest");
-  run("npm", ["test", "--", "--run"], { cwd: ROOT });
+  run("npm", ["test"], { cwd: ROOT });
 
   summary({ skippedSupabase: false });
 }
