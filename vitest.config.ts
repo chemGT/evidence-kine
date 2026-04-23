@@ -16,13 +16,18 @@ export default defineConfig({
     css: false,
     coverage: {
       provider: "v8",
-      include: ["src/logic/**/*.ts", "src/data/**/*.ts"],
-      exclude: ["**/__tests__/**", "**/*.test.ts"],
+      include: [
+        "src/logic/**/*.ts",
+        "src/data/**/*.ts",
+        "scripts/lib/**/*.mjs",
+      ],
+      exclude: ["**/__tests__/**", "**/*.test.{ts,mjs}"],
       reporter: ["text", "html"],
       // Seuils alignés sur `.ai/rules/qa-agent.md` :
       //   - Global (src/data/**, src/logic/**) : plancher 80 %.
       //   - src/logic/** (logique pure) : ≥ 95 % lignes + branches.
       //   - src/logic/bayesian/** : 100 % (régression = bloquant).
+      //   - scripts/lib/** (infra setup) : ≥ 95 % (Sprint 2 ter).
       thresholds: {
         statements: 80,
         branches: 75,
@@ -39,6 +44,12 @@ export default defineConfig({
           branches: 100,
           functions: 100,
           lines: 100,
+        },
+        "scripts/lib/**/*.mjs": {
+          statements: 95,
+          branches: 95,
+          functions: 95,
+          lines: 95,
         },
       },
     },
