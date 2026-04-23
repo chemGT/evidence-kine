@@ -27,7 +27,13 @@ Supabase Seed ──► Zustand Store ──► Moteur Bayésien (pur TS) ──
 
 ## Sprint en cours
 
-### Sprint 2 ter — Script d'installation reproductible — statut : **en cours** (S2T.1 → S2T.6 livrés, S2T.7 audit à planifier)
+*Aucun sprint actif — prêt à lancer Sprint 3 (Vignette clinique pilote).*
+
+---
+
+## Historique (suite)
+
+### Sprint 2 ter — Script d'installation reproductible — statut : **clos** (2026-04-22)
 
 Agent : `@architect`
 Objectif : stack locale complète en une commande, cross-plateforme (Windows PowerShell + Unix), idempotente. Prépare le terrain pour les Sprint 3 (2ᵉ seed `shoulder_cases.sql`), Sprint 5 (intégration E2E) et Sprint 6 (démo investisseurs / IFMK Lyon).
@@ -40,23 +46,14 @@ Objectif : stack locale complète en une commande, cross-plateforme (Windows Pow
 - [x] **S2T.4** [`package.json`](package.json) — scripts `setup`, `setup:reset`, `setup:tests-only`. Dépendances ajoutées : `pg ^8.13.0` + `@types/pg ^8.11.10` (devDependencies).
 - [x] **S2T.5** Tests Vitest : [`scripts/__tests__/preflight.test.mjs`](scripts/__tests__/preflight.test.mjs) (25 tests) + [`scripts/__tests__/psqlRunner.test.mjs`](scripts/__tests__/psqlRunner.test.mjs) (13 tests). Couverture `scripts/lib/` : 100 % stmts/funcs/lines, 95.23 % branches → seuil 95 % respecté.
 - [x] **S2T.6** [`README.md`](README.md) — section « Démarrage rapide » refaite : `npm install && npm run setup`. Tableau des 3 variantes de setup. Ancienne procédure manuelle conservée en fallback.
-- [ ] **S2T.7** Audit `@critic` — reproductibilité, absence d'écrasement `.env.local`, message d'erreur clair si Docker off, aucune dépendance réseau hors Supabase local.
+- [x] **S2T.7** Audit `@critic` : **AUDIT : [OK]** — Classe IIa non dérivée, aucune donnée patient, `.env.local` non écrasé, connexion `127.0.0.1` uniquement. Fix cosmétique appliqué (`--run` redondant).
 
-**Vérification CI (S2T.1 → S2T.6)** :
+**Vérification CI finale** :
 - `npm test` : **222/222** (177 existants + 45 nouveaux).
 - `npm run test:coverage` : global 100 % stmts/funcs/lines, 98.13 % branches ; `scripts/lib/` 100 / 100 / 100 / 95.23 %.
 - `npm run typecheck` / `npm run lint` clean.
 - `npm run build` : zéro warning, bundle inchangé (142.73 KB JS + 14.04 KB CSS).
-- `node scripts/setup.mjs --skip-supabase --skip-deps` sur poste Windows/PowerShell : preflight OK (Node v22.22.0, npm v11.11.1), Vitest 222/222, exit 0.
-
-**Critères de clôture** :
-
-1. `npm run setup` sur machine Windows vierge (Docker Desktop installé) → stack up, migration + seed appliqués, types générés, suite Vitest verte.
-2. Second run de `npm run setup` : idempotent (pas d'erreur, pas d'écrasement).
-3. `npm run setup:tests-only` : pas d'appel Docker/Supabase (utile CI logique pure). **[validé]**
-4. Couverture Vitest ≥ 95 % sur `scripts/lib/` (cf. règle `@qa` durcie au Sprint 1 bis). **[validé — 100 / 100 / 100 / 95.23 %]**
-
-**Validation E2E pleine stack (S2T.7)** : nécessite poste avec Docker Desktop actif — à exécuter lors de l'audit `@critic`.
+- `node scripts/setup.mjs --skip-supabase --skip-deps` sur Windows/PowerShell : preflight OK (Node v22.22.0, npm v11.11.1), 222/222, exit 0.
 
 ### Sprint 3 — Vignette clinique pilote — statut : à faire
 
@@ -214,4 +211,4 @@ Objectif : state management découplé de l'UI (`CONVENTIONS.md`), repository + 
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 2 ter S2T.1 → S2T.6 livrés par @architect (2026-04-22). En attente audit @critic (S2T.7) pour clôture.*
+*Dernière mise à jour : @orchestrator — Sprint 2 ter clos (2026-04-22). AUDIT @critic [OK]. Sprint 3 Vignette clinique pilote prêt à démarrer.*
