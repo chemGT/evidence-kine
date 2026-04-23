@@ -27,11 +27,36 @@ Supabase Seed ──► Zustand Store ──► Moteur Bayésien (pur TS) ──
 
 ## Sprint en cours
 
-*Aucun sprint actif — prêt à lancer Sprint 3 (Vignette clinique pilote).*
+### Sprint 2 ter — Script d'installation reproductible — statut : **en cours** (S2T.1 → S2T.6 livrés, S2T.7 audit à planifier)
 
----
+Agent : `@architect`
+Objectif : stack locale complète en une commande, cross-plateforme (Windows PowerShell + Unix), idempotente. Prépare le terrain pour les Sprint 3 (2ᵉ seed `shoulder_cases.sql`), Sprint 5 (intégration E2E) et Sprint 6 (démo investisseurs / IFMK Lyon).
 
-## Feuille de route Phase 1 Alpha
+**Choix technique** : script **Node.js** unique (`scripts/setup.mjs`), évite la duplication `.sh` / `.ps1` et garantit la portabilité CI. Driver `pg` (pur JS) pour appliquer les seeds → zéro dépendance `psql` dans le `PATH`.
+
+- [x] **S2T.1** [`scripts/lib/preflight.mjs`](scripts/lib/preflight.mjs) — checks Node ≥ 22.12, npm ≥ 9, Docker daemon, Supabase CLI. Helpers `parseVersion` / `meetsMinimum` injectables, messages d'erreur actionnables (liens doc).
+- [x] **S2T.2** [`scripts/lib/psqlRunner.mjs`](scripts/lib/psqlRunner.mjs) — applique tous les `supabase/seed/*.sql` via driver `pg` (port 54322). `applySqlFile`, `listSeedFiles`, `applySeedDirectory` avec DI (ClientCtor, readFile, readdir).
+- [x] **S2T.3** [`scripts/setup.mjs`](scripts/setup.mjs) — orchestrateur 8 étapes. Flags : `--skip-deps`, `--skip-supabase`, `--reset`, `--verbose`. Détection `supabase status` pour idempotence. Régénération types via `supabase gen types typescript --local`.
+- [x] **S2T.4** [`package.json`](package.json) — scripts `setup`, `setup:reset`, `setup:tests-only`. Dépendances ajoutées : `pg ^8.13.0` + `@types/pg ^8.11.10` (devDependencies).
+- [x] **S2T.5** Tests Vitest : [`scripts/__tests__/preflight.test.mjs`](scripts/__tests__/preflight.test.mjs) (25 tests) + [`scripts/__tests__/psqlRunner.test.mjs`](scripts/__tests__/psqlRunner.test.mjs) (13 tests). Couverture `scripts/lib/` : 100 % stmts/funcs/lines, 95.23 % branches → seuil 95 % respecté.
+- [x] **S2T.6** [`README.md`](README.md) — section « Démarrage rapide » refaite : `npm install && npm run setup`. Tableau des 3 variantes de setup. Ancienne procédure manuelle conservée en fallback.
+- [ ] **S2T.7** Audit `@critic` — reproductibilité, absence d'écrasement `.env.local`, message d'erreur clair si Docker off, aucune dépendance réseau hors Supabase local.
+
+**Vérification CI (S2T.1 → S2T.6)** :
+- `npm test` : **222/222** (177 existants + 45 nouveaux).
+- `npm run test:coverage` : global 100 % stmts/funcs/lines, 98.13 % branches ; `scripts/lib/` 100 / 100 / 100 / 95.23 %.
+- `npm run typecheck` / `npm run lint` clean.
+- `npm run build` : zéro warning, bundle inchangé (142.73 KB JS + 14.04 KB CSS).
+- `node scripts/setup.mjs --skip-supabase --skip-deps` sur poste Windows/PowerShell : preflight OK (Node v22.22.0, npm v11.11.1), Vitest 222/222, exit 0.
+
+**Critères de clôture** :
+
+1. `npm run setup` sur machine Windows vierge (Docker Desktop installé) → stack up, migration + seed appliqués, types générés, suite Vitest verte.
+2. Second run de `npm run setup` : idempotent (pas d'erreur, pas d'écrasement).
+3. `npm run setup:tests-only` : pas d'appel Docker/Supabase (utile CI logique pure). **[validé]**
+4. Couverture Vitest ≥ 95 % sur `scripts/lib/` (cf. règle `@qa` durcie au Sprint 1 bis). **[validé — 100 / 100 / 100 / 95.23 %]**
+
+**Validation E2E pleine stack (S2T.7)** : nécessite poste avec Docker Desktop actif — à exécuter lors de l'audit `@critic`.
 
 ### Sprint 3 — Vignette clinique pilote — statut : à faire
 
@@ -88,12 +113,13 @@ Objectif : prototype demo-ready.
 ```
 S0 ──► S1 ──┐
  │          ├──► S5 ──► S6
- ├──► S2 ───┤
- │    │     │
- │    └──► S3
- │
- └──► S4 ────┘
+ ├──► S2 ──► S2 ter ──► S3
+ │                       │
+ │                       ▼
+ └──► S4 ───────────────►
 ```
+
+Le Sprint 2 ter (script d'installation) est un **pré-requis opérationnel** du Sprint 3 : la nouvelle seed `shoulder_cases.sql` sera automatiquement prise en charge par la boucle de seed, évitant une procédure manuelle supplémentaire.
 
 ---
 
@@ -188,4 +214,4 @@ Objectif : state management découplé de l'UI (`CONVENTIONS.md`), repository + 
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 2 Data access + Store clos (2026-04-22), Sprint 3 Vignette clinique pilote prêt à démarrer.*
+*Dernière mise à jour : @orchestrator — Sprint 2 ter S2T.1 → S2T.6 livrés par @architect (2026-04-22). En attente audit @critic (S2T.7) pour clôture.*

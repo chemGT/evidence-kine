@@ -22,19 +22,46 @@ Simulateur bayésien d'orthopédie pour la formation au triage clinique et au di
 
 ## Prérequis
 
-- Node.js ≥ 18
-- npm ≥ 9
-- (Optionnel local) Docker Desktop + Supabase CLI pour faire tourner la base locale
+- Node.js ≥ **22.12** (Vite 8 / Vitest 4)
+- npm ≥ **9**
+- Docker Desktop **démarré** (pour la stack Supabase locale)
+- [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started) dans le `PATH`
 
 ## Démarrage rapide
 
+En une commande, cross-plateforme (Windows PowerShell, macOS, Linux) :
+
 ```bash
 npm install
-cp .env.example .env.local
+npm run setup
+```
+
+Le script `scripts/setup.mjs` enchaîne automatiquement :
+
+1. **Preflight** : versions Node/npm, Docker daemon joignable, Supabase CLI.
+2. **Env** : crée `.env.local` depuis `.env.example` (sans écraser s'il existe déjà).
+3. **Dépendances** : `npm install` (saute si déjà fait avec `--skip-deps`).
+4. **Stack Supabase** : `supabase start` (idempotent, détecte si déjà up).
+5. **Migrations** : `supabase db reset --no-seed`.
+6. **Seeds** : applique tous les `supabase/seed/*.sql` via driver `pg`.
+7. **Types** : régénère `src/types/database.types.ts`.
+8. **Smoke test** : `npm test`.
+
+Puis :
+
+```bash
 npm run dev
 ```
 
-L'application est servie sur [http://localhost:5173](http://localhost:5173).
+L'application est servie sur [http://localhost:5173](http://localhost:5173), Supabase Studio sur [http://127.0.0.1:54323](http://127.0.0.1:54323).
+
+### Variantes
+
+| Commande | Usage |
+|---|---|
+| `npm run setup` | Bootstrap complet (dev local + DB) |
+| `npm run setup:reset` | Idem, force la remise à zéro de la DB |
+| `npm run setup:tests-only` | Saute Docker + Supabase (CI logique pure) |
 
 ## Scripts
 
@@ -49,14 +76,18 @@ L'application est servie sur [http://localhost:5173](http://localhost:5173).
 | `npm run lint` | ESLint — 0 warning autorisé |
 | `npm run format` | Prettier sur `src/` et `supabase/` |
 | `npm run typecheck` | Vérification TypeScript sans émission |
+| `npm run setup` | Bootstrap reproductible (preflight + DB + seeds + types + smoke) |
+| `npm run setup:reset` | Setup avec remise à zéro forcée de la DB |
+| `npm run setup:tests-only` | Setup sans Docker/Supabase (CI logique pure) |
 
-## Supabase local
+## Supabase local — procédure manuelle (fallback)
+
+`npm run setup` automatise ces étapes. À utiliser uniquement pour debug.
 
 ```bash
-npx supabase start                                    # démarre Postgres + Studio + Auth
-npx supabase db reset                                 # applique les migrations
-psql $DATABASE_URL -f supabase/seed/shoulder_tests.sql
-npx supabase gen types typescript --local > src/types/database.types.ts
+npx supabase start
+npx supabase db reset --no-seed
+node scripts/setup.mjs --skip-deps    # applique seeds + régénère types
 ```
 
 Détails : voir [`supabase/README.md`](supabase/README.md).
