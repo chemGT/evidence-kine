@@ -27,7 +27,11 @@ Supabase Seed ──► Zustand Store ──► Moteur Bayésien (pur TS) ──
 
 ## Sprint en cours
 
-*Aucun sprint actif — prêt à lancer Sprint 3 (Vignette clinique pilote).*
+*Aucun sprint actif — prêt à lancer Sprint 4 (UI Medical Excellence).*
+
+---
+
+## Historique (suite)
 
 ---
 
@@ -55,17 +59,26 @@ Objectif : stack locale complète en une commande, cross-plateforme (Windows Pow
 - `npm run build` : zéro warning, bundle inchangé (142.73 KB JS + 14.04 KB CSS).
 - `node scripts/setup.mjs --skip-supabase --skip-deps` sur Windows/PowerShell : preflight OK (Node v22.22.0, npm v11.11.1), 222/222, exit 0.
 
-### Sprint 3 — Vignette clinique pilote — statut : à faire
+### Sprint 3 — Vignette clinique pilote — statut : **clos** (2026-04-22)
 
 Agent : `@scientific`
 Objectif : 1 cas fictif jouable + schéma réutilisable.
 
-- [ ] **S3.1** `src/data/schemas/vignette.schema.ts` (Zod) : `{ anamnese, examen, redFlags[], preTestProb, suggestedTests[] }`
-- [ ] **S3.2** Migration `supabase/migrations/002_clinical_cases_extensions.sql` (si nouveaux champs jsonb requis)
-- [ ] **S3.3** Seed `supabase/seed/shoulder_cases.sql` — vignette « Homme 52 ans, douleur épaule D post-chute vélo, faiblesse élévation »
-- [ ] **S3.4** Red flags codifiés (fracture, luxation, atteinte neuro)
-- [ ] **S3.5** Tests validation schéma Vitest
-- [ ] **S3.6** Audit `@critic` — caractère fictif, disclaimer présent
+- [x] **S3.1** [`src/data/schemas/vignette.schema.ts`](src/data/schemas/vignette.schema.ts) — Zod : `VignetteDataSchema` (disclaimer, anamnese, examen, redFlags[], preTestProbability, suggestedTests[]). Types TS dérivés. Constantes `SHOULDER_RED_FLAGS` (3 red flags urgents) pour Sprint 5.
+- [x] **S3.2** [`supabase/migrations/002_clinical_cases_extensions.sql`](supabase/migrations/002_clinical_cases_extensions.sql) — Index GIN sur `vignette_data`, index composite `(pathology_id, is_published)`, contrainte CHECK `disclaimer` obligatoire.
+- [x] **S3.3** [`supabase/seed/shoulder_cases.sql`](supabase/seed/shoulder_cases.sql) — vignette fictive « Homme 52 ans, douleur épaule D post-chute vélo, faiblesse élévation ». Pathologie : `shoulder-rotator-cuff-tear`. `is_published = true`.
+- [x] **S3.4** Red flags codifiés dans seed + constantes schema : `fracture-humerale`, `luxation-gleno-humerale`, `atteinte-neuro` (tous `severity: "urgent"`, `present: false`).
+- [x] **S3.5** [`src/data/schemas/__tests__/vignette.schema.test.ts`](src/data/schemas/__tests__/vignette.schema.test.ts) — 39 tests : parsing valide (7), disclaimer (2), anamnese (7), preTestProbability (3), redFlags (5), suggestedTests (2), constantes (4), intégrité seed SQL (8). Cross-ref `testSlug` ↔ `shoulder_tests.sql`.
+- [x] **S3.6** Audit `@critic` : **AUDIT : [OK]** — voir section ci-dessous.
+
+**Vérification CI** :
+- `npm test` : **261/261** (222 existants + 39 nouveaux).
+- `npm run typecheck` / `npm run lint` clean.
+- `npm run build` : inchangé.
+
+**Décision S3.2** : pas de nouveau champ colonne (le jsonb existant est suffisant). Migration ciblée sur l'indexation et la contrainte légale de disclaimer.
+
+**preTestProbability 0.35** : base Yamamoto et al., Acta Orthop 2010 (prévalence rupture coiffe chez 50+ ans symptomatiques ~35 %).
 
 ### Sprint 4 — UI Medical Excellence (atomes) — statut : à faire
 
@@ -211,4 +224,4 @@ Objectif : state management découplé de l'UI (`CONVENTIONS.md`), repository + 
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 2 ter clos (2026-04-22). AUDIT @critic [OK]. Sprint 3 Vignette clinique pilote prêt à démarrer.*
+*Dernière mise à jour : @orchestrator — Sprint 3 Vignette clinique pilote clos (2026-04-22). AUDIT @critic [OK]. Sprint 4 UI Medical Excellence prêt à démarrer.*
