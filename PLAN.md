@@ -27,7 +27,11 @@ Supabase Seed ──► Zustand Store ──► Moteur Bayésien (pur TS) ──
 
 ## Sprint en cours
 
-*Aucun sprint actif — prêt à lancer Sprint 4 (UI Medical Excellence).*
+*Aucun sprint actif — prêt à lancer Sprint 5 (Intégration end-to-end).*
+
+---
+
+## Historique (suite)
 
 ---
 
@@ -80,17 +84,23 @@ Objectif : 1 cas fictif jouable + schéma réutilisable.
 
 **preTestProbability 0.35** : base Yamamoto et al., Acta Orthop 2010 (prévalence rupture coiffe chez 50+ ans symptomatiques ~35 %).
 
-### Sprint 4 — UI Medical Excellence (atomes) — statut : à faire
+### Sprint 4 — UI Medical Excellence (atomes) — statut : **clos** (2026-04-22)
 
 Agent : `@ui`
 Objectif : composants sobres, accessibles, conformes à `STYLE.md`.
 
-- [ ] **S4.1** `src/components/ui/ProbabilityGauge.tsx` — IBM Plex Sans, transition 160 ms ease-out
-- [ ] **S4.2** `src/components/ui/ClinicalTestCard.tsx` — Se/Sp/LR + boutons +/−
-- [ ] **S4.3** `src/components/ui/RedFlagBadge.tsx` — rouge `#FF3B30` **exclusif**
-- [ ] **S4.4** `src/components/ui/VignetteHeader.tsx`
-- [ ] **S4.5** `src/components/layout/MedicalLayout.tsx` — fond blanc pur, cibles tactiles 44×44 px
-- [ ] **S4.6** Route `/kitchen-sink` pour revue visuelle (ou Storybook)
+- [x] **S4.1** [`src/components/ui/ProbabilityGauge.tsx`](src/components/ui/ProbabilityGauge.tsx) — `role="meter"`, bar animée 160 ms, IBM Plex Sans, delta optionnel. Tailles sm/md/lg.
+- [x] **S4.2** [`src/components/ui/ClinicalTestCard.tsx`](src/components/ui/ClinicalTestCard.tsx) — grille Se/Sp/LR+/LR− tabulaire, boutons Positif/Négatif (44 px), état `appliedResult`, toggle procédure.
+- [x] **S4.3** [`src/components/ui/RedFlagBadge.tsx`](src/components/ui/RedFlagBadge.tsx) — `#FF3B30` EXCLUSIF, `role="alert"` si `present=true`, version full + compact.
+- [x] **S4.4** [`src/components/ui/VignetteHeader.tsx`](src/components/ui/VignetteHeader.tsx) — démographie fictive, PainDots, motif + mécanisme, icônes Lucide.
+- [x] **S4.5** [`src/components/layout/MedicalLayout.tsx`](src/components/layout/MedicalLayout.tsx) — nav sticky, lien retour, footer disclaimer **permanent**.
+- [x] **S4.6** [`src/pages/KitchenSinkPage.tsx`](src/pages/KitchenSinkPage.tsx) + [`src/App.tsx`](src/App.tsx) — React Router (lazy), route `/kitchen-sink` + `/` + redirect `/simulator/*` (Sprint 5). `src/pages/HomePage.tsx` extrait.
+
+**Vérification CI** :
+- `npm test` : **261/261** (inchangé — composants purement présentationnels).
+- `npm run typecheck` / `npm run lint` clean.
+- `npm run build` : 6 chunks lazy (code-splitting par page), 17 KB CSS, 165 KB JS index.
+- **`npm run dev`** : appli navigable, `/kitchen-sink` affiche tous les composants interactifs.
 
 ### Sprint 5 — Intégration end-to-end — statut : à faire
 
@@ -224,4 +234,4 @@ Objectif : state management découplé de l'UI (`CONVENTIONS.md`), repository + 
 
 ---
 
-*Dernière mise à jour : @orchestrator — Sprint 3 Vignette clinique pilote clos (2026-04-22). AUDIT @critic [OK]. Sprint 4 UI Medical Excellence prêt à démarrer.*
+*Dernière mise à jour : @orchestrator — Sprint 4 UI Medical Excellence clos (2026-04-22). Sprint 5 Intégration end-to-end prêt à démarrer.*
