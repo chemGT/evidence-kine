@@ -32,11 +32,7 @@
    */
   .font-technical,
   [data-technical] {
-    font-family:
-      "IBM Plex Sans",
-      ui-sans-serif,
-      system-ui,
-      sans-serif;
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "tnum", "cv08";
     font-variant-numeric: tabular-nums;
   }
